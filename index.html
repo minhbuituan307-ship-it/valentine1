@@ -84,13 +84,13 @@
 </head>
 <body>
 
-    <div id="player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
+    <div id="player" style="position: absolute; width: 1px; height: 1px; opacity: 0.01; pointer-events: none;"></div>
 
     <div id="lock-screen">
         <div class="lock-box">
             <h1 style="margin-top:0;">oi chào bel iu ❤️</h1>
             <p>nhập mk gồm 4 chữ số (ngày ngày tháng tháng)</p>
-            <input type="password" id="pin" maxlength="4" placeholder="••••">
+            <input type="password" id="pin" pattern="\d*" inputmode="numeric" maxlength="4" placeholder="••••">
             <br>
             <button onclick="unlock()" style="background: white; color: var(--pink); width: 100%;">mở thư</button>
         </div>
@@ -101,7 +101,7 @@
         <h1 style="color: #333; font-size: 1.8rem;">bel có đồng ý làm bồ min khum?</h1>
         <div class="btn-container">
             <button id="yes-btn" onclick="sayYes()">YES</button>
-            <button id="no-btn" onmouseover="moveNo()" ontouchstart="moveNo()" onclick="moveNo()">NO</button>
+            <button id="no-btn" onmouseover="moveNo()" ontouchstart="moveNo()">NO</button>
         </div>
     </div>
 
@@ -121,7 +121,7 @@
         <button id="read-letter-btn" onclick="showLetter()">đọc thư nì ❤️</button>
 
         <div id="letter-box">
-            <h2 style="color: var(--pink); margin-top: 0;">gửi iu của anh.Chou,</h2>
+            <h2 style="color: var(--pink); margin-top: 0;">Gửi iu của anh.Chou,</h2>
             <p>
                 valentines này có thể khum phải là ngày đầu min với nu gặp nhau, nhưng là một dịp đặc biệt để nhìn lại min với nu đã đi được bao xa
                 cũng như là dịp min cảm ơn nu vì đã đồng hành, tha thứ, và chọn min.
@@ -133,8 +133,8 @@
                 yeeuuuuuuuuuuuuuuuuuuuuu bel!
             </p>
             <p style="text-align: right; font-weight: bold;">
-                mãi mãi là của mi, <br>
-                iu của em.Min
+                mãi mãi là của mi <br>
+                Iu của em.Min
             </p>
         </div>
         
@@ -152,29 +152,42 @@
             player = new YT.Player('player', {
                 videoId: 'SDNEti5YyJU',
                 playerVars: { 
-                    'autoplay': 0, 
+                    'autoplay': 1, 
                     'controls': 0, 
                     'loop': 1, 
                     'playlist': 'SDNEti5YyJU', 
-                    'start': 39, // Start music at 39s
-                    'mute': 0 
+                    'start': 39,
+                    'mute': 1, // Start muted for autoplay compatibility
+                    'playsinline': 1
+                },
+                events: {
+                    'onReady': onPlayerReady
                 }
             });
+        }
+
+        function onPlayerReady(event) {
+            // Player is ready
         }
 
         function unlock() {
             const pinInput = document.getElementById('pin').value;
             if (pinInput === "1803") {
-                document.getElementById('lock-screen').style.transform = "translateY(-100%)";
-                document.getElementById('main-content').style.display = "flex";
+                // IMPORTANT: Interaction for mobile sound
                 if (player && player.playVideo) { 
                     player.unMute(); 
                     player.setVolume(100); 
                     player.playVideo(); 
                 }
+
+                document.getElementById('lock-screen').style.transform = "translateY(-100%)";
+                document.getElementById('main-content').style.display = "flex";
+                
                 calculateDays("2025-07-07"); 
                 setInterval(createHeart, 300);
-            } else { alert("Try again, babe! ❤️"); }
+            } else { 
+                alert("oi dòi oi bel khum nhớ à(gợi í ngày sinh của min nhe :)))! ❤️"); 
+            }
         }
 
         function calculateDays(startDateStr) {
@@ -204,6 +217,8 @@
         }
 
         function sayYes() {
+            // Unmute again just in case
+            if (player && player.playVideo) { player.unMute(); player.playVideo(); }
             document.getElementById('main-content').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
             document.body.style.overflowY = "auto";
